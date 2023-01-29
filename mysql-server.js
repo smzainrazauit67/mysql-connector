@@ -79,7 +79,7 @@ app.use(bodyParser.json());
 //       });
 // })
 
-app.post('/api/signup', function (req, res) {
+app.post('/api/sqlconnection', function (req, res) {
   const { host, user, password, database } = req.body;
   console.log('User Details: ', req.body);
   const connection = mysql.createConnection({
