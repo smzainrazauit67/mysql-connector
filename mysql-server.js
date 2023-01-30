@@ -58,7 +58,7 @@ app.use(bodyParser.json());
 //     const { loginUser, loginPass } = req.body;
 //     console.log(`User logging in: ${loginUser}`); 
 //     connection.connect((error) => {
-  //       if(error) {
+//         if(error) {
 //         console.log('Error connecting: ' + error.message);
 //         return;
 //     }
@@ -66,7 +66,7 @@ app.use(bodyParser.json());
 //     });
 //     connection.query("SELECT * from users", function (err, result) {
 //         if (err) {
-  //             console.log('Error on query: ' + err.message);
+//               console.log('Error on query: ' + err.message);
 //             return;
 //         }
 //         console.log("Query: Successful");
@@ -95,9 +95,18 @@ app.post('/api/sqlconnection', function (req, res) {
       return;
     }
     console.log('Connection: Established sucessfully'); 
-    res.send('Connection: Established sucessfully');
+    // res.send('Connection: Established sucessfully');
   })
-
+  connection.query("SELECT event_time, user_host, server_id, command_type FROM general_log WHERE command_type='Query' LIMIT 15", function (err, result) {
+    if (err) {
+        console.log('Error on query: ' + err.message);
+        return;
+        }
+      console.log("Query: Successful");
+      const records = result;
+      console.log(records);
+      res.send(records);
+})
   });
 
 //   const dBQuery = "INSERT INTO users (username, email, password, confirm_pass) VALUES ?";
