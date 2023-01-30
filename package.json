@@ -18,7 +18,6 @@
     "mysql": "^2.18.1",
     "nodemon": "^2.0.20",
     "socket.io": "^4.5.4",
-    "socket.io-client": "^4.5.4",
-    "text-miner": "^2.0.0"
+    "socket.io-client": "^4.5.4"
   }
 }
