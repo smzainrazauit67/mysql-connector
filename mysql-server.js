@@ -76,7 +76,7 @@ app.post('/api/sqlconnection', function (req, res) {
     console.log('Connection: Established sucessfully'); 
     // res.send('Connection: Established sucessfully');
   })
-  connection.query("SELECT event_time, user_host, server_id, command_type FROM general_log LIMIT 15", function (err, result) {
+  connection.query("SELECT event_time, server_id, command_type ,CONVERT(argument USING utf8) FROM general_log order by event_time desc LIMIT 15;", function (err, result) {
     if (err) {
         console.log('Error on query: ' + err.message);
         return;
