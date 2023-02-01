@@ -27,9 +27,8 @@ io.on('connection', (socket) => {
     //   // console.log(lines)
     for (let i = 0; i < 15; i++) {
       setTimeout(() => {
-        console.log(typeof records)
-        //if (records) 
-        socket.emit('mysql-logs', records[i]);
+        console.log(typeof records, Object.keys(records[i]))
+        if (records) socket.emit('mysql-logs', records[i]);
         }, i * 1500);
       }
   });
