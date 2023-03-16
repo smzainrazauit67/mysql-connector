@@ -17,21 +17,47 @@ const io = require("socket.io")(server, {
   },
 });
 
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+// function reloadFile() {
+//   fs.readFile('C:/ProgramData/MySQL/MySQL Server 8.0/Data/sami/sami.log', 'utf8', (err, data) => {
+//     if (err) throw err;
+//     console.log(`beep`);
+//   });
+// }
+
+
 io.on('connection', (socket) => {
   console.log("Socket Connected");
-
+  
   socket.on("mysql-logs", (data) => {
     console.log("=== creating stream ===");
     // .on('data', (chunk) => {
     //   const lines = chunk.toString().split('\n').slice(-10);
     //   // console.log(lines)
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 10; i++) {
       setTimeout(() => {
-        console.log(typeof records, Object.keys(records[i]))
+        // console.log(typeof records[i])
         if (records) socket.emit('mysql-logs', records[i]);
         }, i * 1500);
+      // socket.emit('mysql-logs', records[i])
       }
+      fs.watchFile('C:/ProgramData/MySQL/MySQL Server 8.0/Data/mysql/general_log.csv', (curr, prev) => {
+        if (curr.mtime !== prev.mtime ) {
+          console.log(`Change Detected!`); 
+          fs.createReadStream("C:/ProgramData/MySQL/MySQL Server 8.0/Data/mysql/general_log.csv")
+          .on('data', (chunk) => {
+            const lines = chunk.toString().split('\n').slice(-2);
+            const resLines = {resLine: lines}
+            socket.emit('watch-logs', resLines);
+          })
+
+        }});
   });
+
+
   
   socket.on("disconnect", () => {
     console.log("user disconnected");
@@ -39,9 +65,7 @@ io.on('connection', (socket) => {
 
   });
   
-  // fs.watch('/var/log/syslog', (eventType, filename) => {
-  //   if (eventType === 'change') {
-  //     console.log(`File ${filename} was changed!`);
+
   //     exec('tail -n 1 /var/log/syslog', (err, stdout, stderr) => {
   //       if (err) {
   //         console.error(err);
@@ -54,13 +78,17 @@ io.on('connection', (socket) => {
   // });
 
 
-app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+// app.use(cors());
+// app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(bodyParser.json());
 
 app.post('/api/sqlconnection', function (req, res) {
   const { host, user, password, database } = req.body;
   // console.log('User Details: ', req.body);
+  fs.chmod('C:/ProgramData/MySQL/MySQL Server 8.0/Data/mysql/general_log.csv', 0o777, (err) => {
+    if (err) throw err;
+    console.log('File permissions changed successfully!');
+  });
   const connection = mysql.createConnection({
     user: user,
     host: host,
@@ -76,7 +104,7 @@ app.post('/api/sqlconnection', function (req, res) {
     console.log('Connection: Established sucessfully'); 
     // res.send('Connection: Established sucessfully');
   })
-  connection.query("SELECT event_time, server_id, command_type ,CONVERT(argument USING utf8) FROM general_log order by event_time desc LIMIT 15;", function (err, result) {
+  connection.query("SELECT DATE_FORMAT(event_time, '%d-%b-%Y %H:%i:%s') AS et, server_id, command_type ,CONVERT(argument USING utf8) AS qu FROM general_log order by event_time desc LIMIT 5;", function (err, result) {
     if (err) {
         console.log('Error on query: ' + err.message);
         return;
