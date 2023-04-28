@@ -44,10 +44,10 @@ io.on('connection', (socket) => {
         }, i * 1500);
       // socket.emit('mysql-logs', records[i])
       }
-      fs.watchFile('C:/ProgramData/MySQL/MySQL Server 8.0/Data/mysql/general_log.csv', (curr, prev) => {
+      fs.watchFile('/var/log/mysql/query.log', (curr, prev) => {
         if (curr.mtime !== prev.mtime ) {
           console.log(`Change Detected!`); 
-          fs.createReadStream("C:/ProgramData/MySQL/MySQL Server 8.0/Data/mysql/general_log.csv")
+          fs.createReadStream("/var/log/mysql/query.log")
           .on('data', (chunk) => {
             const lines = chunk.toString().split('\n').slice(-2);
             const resLines = {resLine: lines}
@@ -85,7 +85,7 @@ io.on('connection', (socket) => {
 app.post('/api/sqlconnection', function (req, res) {
   const { host, user, password, database } = req.body;
   // console.log('User Details: ', req.body);
-  fs.chmod('C:/ProgramData/MySQL/MySQL Server 8.0/Data/mysql/general_log.csv', 0o777, (err) => {
+  fs.chmod('/var/log/mysql/query.log', 0o777, (err) => {
     if (err) throw err;
     console.log('File permissions changed successfully!');
   });
