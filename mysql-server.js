@@ -105,7 +105,7 @@ app.post('/api/sqlconnection', function (req, res) {
     console.log('Connection: Established sucessfully'); 
     // res.send('Connection: Established sucessfully');
   })
-  connection.query("SELECT DATE_FORMAT(event_time, '%d-%b-%Y %H:%i:%s') AS et, server_id, command_type ,CONVERT(argument USING utf8) AS qu FROM general_log order by event_time desc LIMIT 5;", function (err, result) {
+  connection.query("SELECT DATE_FORMAT(event_time, '%d-%b-%Y %H:%i:%s') AS et, server_id, command_type ,CONVERT(argument USING utf8) AS qu FROM general_log order by event_time desc LIMIT 10;", function (err, result) {
     if (err) {
         console.log('Error on query: ' + err.message);
         return;
