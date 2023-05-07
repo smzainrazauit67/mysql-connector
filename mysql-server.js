@@ -44,7 +44,11 @@ io.on('connection', (socket) => {
         }, i * 1500);
       // socket.emit('mysql-logs', records[i])
       }
-      // fs.watchFile('C:/ProgramData/MySQL/MySQL Server 8.0/Data/mysql/general_log.CSV', (curr, prev) => {
+
+  });
+
+  socket.on("watch-logs", () => {
+    // fs.watchFile('C:/ProgramData/MySQL/MySQL Server 8.0/Data/mysql/general_log.CSV', (curr, prev) => {
       fs.watchFile('/var/lib/mysql/mysql/general_log.CSV', (curr, prev) => {
         if (curr.mtime !== prev.mtime ) {
           console.log(`Change Detected!`); 
@@ -57,7 +61,8 @@ io.on('connection', (socket) => {
           })
 
         }});
-  });
+
+  })
 
 
   
