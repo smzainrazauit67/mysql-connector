@@ -50,12 +50,12 @@ io.on('connection', (socket) => {
   });
 
   socket.on("watch-logs", () => {
-    fs.watchFile('C:/ProgramData/MySQL/MySQL Server 8.0/Data/mysql/general_log.CSV', (curr, prev) => {
-      // fs.watchFile('/var/lib/mysql/mysql/general_log.CSV', (curr, prev) => {
+    // fs.watchFile('C:/ProgramData/MySQL/MySQL Server 8.0/Data/mysql/general_log.CSV', (curr, prev) => {
+      fs.watchFile('/var/lib/mysql/mysql/general_log.CSV', (curr, prev) => {
         if (curr.mtime !== prev.mtime ) {
           console.log(`Change Detected!`); 
-          fs.createReadStream("C:/ProgramData/MySQL/MySQL Server 8.0/Data/mysql/general_log.CSV")
-          // fs.createReadStream("/var/lib/mysql/mysql/general_log.CSV")
+          // fs.createReadStream("C:/ProgramData/MySQL/MySQL Server 8.0/Data/mysql/general_log.CSV")
+          fs.createReadStream("/var/lib/mysql/mysql/general_log.CSV")
           .on('data', (chunk) => {
             const lines = chunk.toString().split('\n').slice(-2);
             const resLines = {resLine: lines}
@@ -94,8 +94,8 @@ io.on('connection', (socket) => {
 app.post('/api/sqlconnection', function (req, res) {
   const { host, user, password, database } = req.body;
   // console.log('User Details: ', req.body);
-  fs.chmod('C:/ProgramData/MySQL/MySQL Server 8.0/Data/mysql/general_log.CSV', 0o777, (err) => {
-  // fs.chmod('/var/lib/mysql/mysql/general_log.CSV', 0o777, (err) => {
+  // fs.chmod('C:/ProgramData/MySQL/MySQL Server 8.0/Data/mysql/general_log.CSV', 0o777, (err) => {
+  fs.chmod('/var/lib/mysql/mysql/general_log.CSV', 0o777, (err) => {
     if (err) throw err;
     console.log('File permissions changed successfully!');
   });
@@ -105,7 +105,7 @@ app.post('/api/sqlconnection', function (req, res) {
     password: password,
     database: database,
     insecureAuth : true,
-    // socketPath: '/var/run/mysqld/mysqld.sock'
+    socketPath: '/var/run/mysqld/mysqld.sock'
   });
   connection.connect((error) => {
     if(error) {
